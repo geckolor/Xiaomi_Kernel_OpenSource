@@ -27,6 +27,8 @@
 #include "sched.h"
 #include "walt.h"
 
+#include <linux/display_state.h>
+
 #define MAX_CPUS_PER_CLUSTER 6
 #define MAX_CLUSTERS 3
 
@@ -734,6 +736,8 @@ static bool eval_need(struct cluster_data *cluster)
 	bool need_flag = false;
 	unsigned int new_need;
 	s64 now, elapsed;
+  unsigned int _busy_up_thres;
+  unsigned int _busy_down_thres; 
 
 	if (unlikely(!cluster->inited))
 		return 0;
@@ -745,14 +749,20 @@ static bool eval_need(struct cluster_data *cluster)
 	} else {
 		cluster->active_cpus = get_active_cpu_count(cluster);
 		thres_idx = cluster->active_cpus ? cluster->active_cpus - 1 : 0;
+   
+    _busy_up_thres = is_display_on() ? cluster->busy_up_thres[thres_idx]:97;
+    _busy_down_thres = is_display_on() ? cluster->busy_down_thres[thres_idx]:75;
+   
 		list_for_each_entry(c, &cluster->lru, sib) {
 			bool old_is_busy = c->is_busy;
 
-			if (c->busy >= cluster->busy_up_thres[thres_idx] ||
+			if (c->busy >= _busy_up_thres ||
 			    sched_cpu_high_irqload(c->cpu))
 				c->is_busy = true;
-			else if (c->busy < cluster->busy_down_thres[thres_idx])
+			else if (c->busy < _busy_down_thres)
 				c->is_busy = false;
+        
+      if (!is_display_on()) c->is_busy = false;
 
 			trace_core_ctl_set_busy(c->cpu, c->busy, old_is_busy,
 						c->is_busy);
