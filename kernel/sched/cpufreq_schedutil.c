@@ -250,7 +250,8 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 	unsigned int freq = arch_scale_freq_invariant() ?
 				policy->cpuinfo.max_freq : policy->cur;
 
-  if(is_display_on())	freq = (freq + (freq >> 2)) * util / max;
+  if(is_display_on()) freq = (freq + (freq >> 2)) * util / max;
+  //if(is_display_on()) freq = freq * 1.4 * util / max;
   else freq = freq * util / max;
   
 	trace_sugov_next_freq(policy->cpu, util, max, freq);
