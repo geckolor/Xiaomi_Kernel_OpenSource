@@ -127,3 +127,5 @@ all.config
 kernel/configs/android-*.cfg
 /out
  
+
+kernel.log
