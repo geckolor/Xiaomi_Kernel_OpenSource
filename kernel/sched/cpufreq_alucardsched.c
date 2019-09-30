@@ -31,10 +31,10 @@
 #define cpufreq_enable_fast_switch(x)
 #define cpufreq_disable_fast_switch(x)
 #define ACGOV_KTHREAD_PRIORITY	50
-#define CONFIG_ARCH_DUMMY 1
+//#define CONFIG_ARCH_DUMMY 1
 
 #ifdef CONFIG_ARCH_DUMMY
-#define UP_RATE_LIMIT_US			(20000)
+#define UP_RATE_LIMIT_US			(10000)
 #define UP_RATE_LIMIT_US_BIGC		(10000)
 #define DOWN_RATE_LIMIT_US			(20000)
 #define FREQ_RESPONSIVENESS			1056000
@@ -44,7 +44,7 @@
 #define PUMP_DEC_STEP				1
 #define BOOST_PERC					10
 #else
-#define LATENCY_MULTIPLIER2			(2000)
+#define LATENCY_MULTIPLIER2			(10000)
 #define FREQ_RESPONSIVENESS			1056000
 #define PUMP_INC_STEP_AT_MIN_FREQ	1
 #define PUMP_INC_STEP				1
@@ -250,7 +250,7 @@ static void acgov_update_commit(struct acgov_policy *sg_policy, u64 time,
 
 	if (!next_freq)
 		return;
-	
+
 	if (policy->fast_switch_enabled) {
 		if (policy->cur == next_freq) {
 			trace_cpu_frequency(policy->cur, smp_processor_id());
